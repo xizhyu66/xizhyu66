@@ -36,13 +36,13 @@
 ## 🚀 代表性项目
 
 ### 💎 电商中台系统
-**技术栈**: Spring Cloud Alibaba + MySQL + Redis + Elasticsearch + RocketMQ
-- 设计并实现千万级用户电商平台，支撑日均百万订单
+**技术栈**: Spring、SpringBoot、MybatisPlus、Mysql、Redis、ElasticSearch、Kafka、RocketMQ、Sharding-JDBC
+- 设计并实现高并发用户电商平台，支撑日均百万订单
 - 构建商品、订单、库存、营销微服务架构
 - 优化秒杀场景，QPS从 1000 提升至 50000+
 
 ### 🎯 智能营销平台  
-**技术栈**: Spring Boot + Redis + Kafka + Drools
+**技术栈**: Spring Boot + Redis + RocketMQ
 - 实现全渠道营销活动管理，支持优惠券、满减、秒杀等10+营销玩法
 - 规则引擎驱动个性化营销策略，提升转化率 35%
 - 分布式锁保障高并发下数据一致性
