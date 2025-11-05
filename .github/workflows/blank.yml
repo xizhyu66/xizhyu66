@@ -1,0 +1,72 @@
+name: AI LLM Code Review Workflow
+
+on:
+  push:
+    branches:
+      - 'xxxx'
+
+jobs:
+  openai-code-review:
+    runs-on: ubuntu-latest
+    name: OpenAI LLM Code Review
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v43
+
+      - name: Filter Java Files
+        id: changed-java-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            **/*.java
+
+      - name: List all changed files
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-java-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+              echo "$file was changed"
+          done
+        shell: bash
+
+      - name: Open AI Review code
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHATGPT_KEY: ${{ secrets.CHATGPT_KEY }}
+          CHATGPT_MODEL: ${{ secrets.CHATGPT_MODEL }}
+        run: |
+          touch result_review.md
+          for file in ${{ steps.changed-java-files.outputs.all_changed_files }}; do
+              content=$(jq -Rs . "$file")
+              echo "准备发送AI代码审查请求"
+              json=$(jq -n --arg data "$content" '{"stream": false,"model": "glm-4-flash","messages": [ {"role": "system", "content": "你是一个Java技术专家,请对我的代码进行评审，提出优化建议与问题"},{"role": "user", "content": $data}]}' )
+              echo "发送给AI的数据结构: $json"
+              airesponse=$(curl https://open.bigmodel.cn/api/paas/v4/chat/completions \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $CHATGPT_KEY" -d "$json" | jq -r '.choices[0].message.content')
+              
+              if [ "$airesponse" == "null" ]; then
+                echo "API调用失败，请检查配额和账单信息。"
+                exit 1
+              else
+                echo "Response from OpenAI:"
+                echo "$airesponse"
+                echo "Github Action AI Code Review for \`$file\`, 代码评审结果如下： $airesponse " >> result_review.md
+              fi
+          done
+        shell: bash
+      - name: Commit review result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add result_review.md
+          git commit -m "Add OpenAI code review result"
+          git push   
