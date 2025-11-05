@@ -1,1 +1,15 @@
-8年以上经验的高级开发
+# 👋 你好，我是 [你的名字]！
+
+## 🚀 关于我
+- 💼 职业：[你的职业]
+- 🌱 正在学习：[当前学习的技术]
+- 💬 可以和我交流：[你擅长的领域]
+- 📫 联系我：[邮箱或其他联系方式]
+
+## 🛠 技术栈
+- **前端:** JavaScript, React, Vue
+- **后端:** Node.js, Python, Java
+- **工具:** Git, Docker, VS Code
+
+## 📊 GitHub 统计
+![你的GitHub统计](https://github-readme-stats.vercel.app/api?username=你的用户名&show_icons=true)
